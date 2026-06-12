@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Plus, Users, Clock, Trash2 } from 'lucide-react';
 import { hasStore } from '../lib/store';
+import { bossById } from '../lib/bosses';
 import { pad, timeLabel } from '../lib/date';
 import type { RaidEvent } from '../lib/types';
 import './Home.css';
@@ -76,7 +77,23 @@ export function Home({
           {events.map((ev) => (
             <div key={ev.id} className="home-card">
               <button onClick={() => onOpen(ev.id)} className="home-card-open">
-                <h3 className="home-card-title">{ev.title}</h3>
+                <div className="home-card-head">
+                  {bossById(ev.bossId) && (
+                    <img
+                      src={bossById(ev.bossId)!.img}
+                      alt={bossById(ev.bossId)!.name}
+                      className="home-card-boss-img"
+                    />
+                  )}
+                  <div className="home-card-headtext">
+                    <h3 className="home-card-title">{ev.title}</h3>
+                    {bossById(ev.bossId) && (
+                      <span className="home-card-boss-name">
+                        {bossById(ev.bossId)!.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
                 <div className="home-card-meta">
                   <span className="home-card-meta-item">
                     <Calendar className="icon-3-5" strokeWidth={1.5} />

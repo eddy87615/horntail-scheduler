@@ -127,10 +127,36 @@
   font-family: inherit;
 }
 
+.home-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-card-boss-img {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.home-card-headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .home-card-title {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.375;
+}
+
+.home-card-boss-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
 }
 
 .home-card-meta {
