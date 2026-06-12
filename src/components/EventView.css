@@ -140,11 +140,16 @@
 
 /* ------------------------------- the grid -------------------------------- */
 .event-grid-wrap {
-  overflow-x: auto;
+  /* own scroll panel (both axes) so the date header can stick to its top;
+     window-level sticky fails because overflow-x makes this the scroll context */
+  overflow: auto;
+  max-height: 70vh;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface-40);
-  padding: 12px;
+  /* no top padding: it would let rows peek above the sticky header */
+  padding: 0 12px 12px;
 }
 
 .event-grid {
@@ -154,6 +159,12 @@
 
 .event-grid-headrow {
   display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bg);
+  /* spacing lives here (not on the scroll container) so nothing peeks above */
+  padding-top: 12px;
 }
 
 .event-grid-timecol {

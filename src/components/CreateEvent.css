@@ -195,7 +195,7 @@
 .create-cal-day.is-selected {
   background: var(--text);
   font-weight: 700;
-  color: var(--text);
+  color: var(--bg);
 }
 
 .create-submit {

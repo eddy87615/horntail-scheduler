@@ -1,4 +1,11 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import {
   Save,
   ArrowLeft,
@@ -75,12 +82,18 @@ export function EventView({
 
   const dragging = useRef(false);
   const dragMode = useRef<'add' | 'remove'>('add');
+  const lastKey = useRef<string | null>(null);
   useEffect(() => {
     const up = () => {
       dragging.current = false;
+      lastKey.current = null;
     };
     window.addEventListener('pointerup', up);
-    return () => window.removeEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+    return () => {
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+    };
   }, []);
   const applyCell = (key: string, mode: 'add' | 'remove') => {
     setMySlots((prev) => {
@@ -93,10 +106,20 @@ export function EventView({
   const onCellDown = (key: string) => {
     dragMode.current = mySlots.has(key) ? 'remove' : 'add';
     dragging.current = true;
+    lastKey.current = key;
     applyCell(key, dragMode.current);
   };
-  const onCellEnter = (key: string) => {
-    if (dragging.current) applyCell(key, dragMode.current);
+  // Touch fires no pointerenter on the cells the finger slides over (the first
+  // cell captures the pointer), so resolve the cell under the finger by coords.
+  const onGridPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragging.current) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const key = (el?.closest('[data-cell]') as HTMLElement | null)?.dataset
+      .cell;
+    if (key && key !== lastKey.current) {
+      lastKey.current = key;
+      applyCell(key, dragMode.current);
+    }
   };
 
   const saveMine = async () => {
@@ -224,6 +247,7 @@ export function EventView({
         <div
           className="event-grid"
           style={{ touchAction: tab === 'mine' ? 'none' : 'auto' }}
+          onPointerMove={tab === 'mine' ? onGridPointerMove : undefined}
         >
           <div className="event-grid-headrow">
             <div className="event-grid-timecol" />
@@ -246,11 +270,11 @@ export function EventView({
                   return (
                     <div
                       key={key}
+                      data-cell={key}
                       onPointerDown={(e) => {
                         e.preventDefault();
                         onCellDown(key);
                       }}
-                      onPointerEnter={() => onCellEnter(key)}
                       className={`event-cell event-cell-mine${on ? ' is-on' : ''}`}
                     />
                   );
@@ -282,7 +306,7 @@ export function EventView({
             </>
           ) : (
             <>
-              <Save className="icon-4" /> 儲存我的時間
+              <Save className="icon-4" strokeWidth={1.5} /> 儲存我的時間
             </>
           )}
         </button>
