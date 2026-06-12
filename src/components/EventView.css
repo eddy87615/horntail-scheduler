@@ -275,7 +275,7 @@
 .event-best {
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: #efefef;
+  background: var(--bg);
   padding: 16px;
 }
 .event-best-title {

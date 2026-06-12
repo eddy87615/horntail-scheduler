@@ -346,7 +346,7 @@ export function EventView({
           </div>
           <div className="event-replies">
             <h3 className="event-replies-title">
-              <Users className="icon-4" /> 已回覆 ({total})
+              <Users className="icon-4" strokeWidth={1.5} /> 已回覆 ({total})
             </h3>
             {total === 0 ? (
               <p className="event-replies-empty">尚無人回覆。</p>
