@@ -80,21 +80,21 @@ export function EventView({
     loadAll();
   }, [loadAll]);
 
-  const dragging = useRef(false);
+  const painting = useRef(false);
   const dragMode = useRef<'add' | 'remove'>('add');
   const lastKey = useRef<string | null>(null);
-  useEffect(() => {
-    const up = () => {
-      dragging.current = false;
-      lastKey.current = null;
-    };
-    window.addEventListener('pointerup', up);
-    window.addEventListener('pointercancel', up);
-    return () => {
-      window.removeEventListener('pointerup', up);
-      window.removeEventListener('pointercancel', up);
-    };
-  }, []);
+  const holdTimer = useRef<number | null>(null);
+  const startCell = useRef<string | null>(null);
+  const startXY = useRef<{ x: number; y: number } | null>(null);
+  const moved = useRef(false);
+
+  const clearHold = () => {
+    if (holdTimer.current !== null) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+  };
+
   const applyCell = (key: string, mode: 'add' | 'remove') => {
     setMySlots((prev) => {
       const n = new Set(prev);
@@ -103,22 +103,90 @@ export function EventView({
     });
     setSaved(false);
   };
-  const onCellDown = (key: string) => {
+  const toggleCell = useCallback((key: string) => {
+    setMySlots((prev) => {
+      const n = new Set(prev);
+      n.has(key) ? n.delete(key) : n.add(key);
+      return n;
+    });
+    setSaved(false);
+  }, []);
+
+  const startPaint = (key: string) => {
+    painting.current = true;
     dragMode.current = mySlots.has(key) ? 'remove' : 'add';
-    dragging.current = true;
     lastKey.current = key;
     applyCell(key, dragMode.current);
+    navigator.vibrate?.(10); // haptic cue that paint mode engaged
   };
-  // Touch fires no pointerenter on the cells the finger slides over (the first
-  // cell captures the pointer), so resolve the cell under the finger by coords.
+
+  // end any gesture; a clean tap (no paint, no scroll) toggles the cell
+  useEffect(() => {
+    const end = () => {
+      clearHold();
+      if (!painting.current && !moved.current && startCell.current) {
+        toggleCell(startCell.current);
+      }
+      painting.current = false;
+      startCell.current = null;
+      startXY.current = null;
+      lastKey.current = null;
+      moved.current = false;
+    };
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    return () => {
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+    };
+  }, [toggleCell]);
+
+  // block scrolling only while actively painting (touch-action can't toggle
+  // mid-gesture, so we preventDefault touchmove via a non-passive listener)
+  const blockScroll = useRef((e: TouchEvent) => {
+    if (painting.current) e.preventDefault();
+  });
+  const gridEl = useRef<HTMLDivElement | null>(null);
+  const setGridRef = useCallback((node: HTMLDivElement | null) => {
+    if (gridEl.current) {
+      gridEl.current.removeEventListener('touchmove', blockScroll.current);
+    }
+    gridEl.current = node;
+    node?.addEventListener('touchmove', blockScroll.current, { passive: false });
+  }, []);
+
+  const onCellDown = (key: string, e: ReactPointerEvent<HTMLDivElement>) => {
+    startCell.current = key;
+    startXY.current = { x: e.clientX, y: e.clientY };
+    moved.current = false;
+    if (e.pointerType === 'mouse') {
+      startPaint(key); // desktop: drag-paint immediately
+      return;
+    }
+    // touch/pen: tap = toggle, drag = scroll, long-press = paint
+    clearHold();
+    holdTimer.current = window.setTimeout(() => startPaint(key), 300);
+  };
+
   const onGridPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragging.current) return;
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const key = (el?.closest('[data-cell]') as HTMLElement | null)?.dataset
-      .cell;
-    if (key && key !== lastKey.current) {
-      lastKey.current = key;
-      applyCell(key, dragMode.current);
+    if (painting.current) {
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const key = (el?.closest('[data-cell]') as HTMLElement | null)?.dataset
+        .cell;
+      if (key && key !== lastKey.current) {
+        lastKey.current = key;
+        applyCell(key, dragMode.current);
+      }
+      return;
+    }
+    // moving before paint engaged = the user is scrolling → cancel long-press
+    if (startXY.current && holdTimer.current !== null) {
+      const dx = e.clientX - startXY.current.x;
+      const dy = e.clientY - startXY.current.y;
+      if (Math.hypot(dx, dy) > 8) {
+        moved.current = true;
+        clearHold();
+      }
     }
   };
 
@@ -246,7 +314,7 @@ export function EventView({
       <div className="event-grid-wrap">
         <div
           className="event-grid"
-          style={{ touchAction: tab === 'mine' ? 'none' : 'auto' }}
+          ref={setGridRef}
           onPointerMove={tab === 'mine' ? onGridPointerMove : undefined}
         >
           <div className="event-grid-headrow">
@@ -271,10 +339,7 @@ export function EventView({
                     <div
                       key={key}
                       data-cell={key}
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        onCellDown(key);
-                      }}
+                      onPointerDown={(e) => onCellDown(key, e)}
                       className={`event-cell event-cell-mine${on ? ' is-on' : ''}`}
                     />
                   );

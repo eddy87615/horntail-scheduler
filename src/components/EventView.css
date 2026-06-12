@@ -155,6 +155,12 @@
 .event-grid {
   display: inline-block;
   min-width: 100%;
+  /* let the panel scroll normally; painting blocks scroll via JS only while active */
+  touch-action: pan-x pan-y;
+  /* kill the long-press text-selection / callout so paint mode is clean */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .event-grid-headrow {
