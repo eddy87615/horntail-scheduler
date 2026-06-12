@@ -1,0 +1,140 @@
+/* ============================ theme & globals ============================ */
+:root {
+  /* surfaces */
+  --bg: #fdffff;
+  --active: #e5e5e5;
+
+  /* borders */
+  --border: #111111;
+  --border-60: rgba(30, 41, 59, 0.6);
+  --border-strong: #334155;
+  --radius: 4px;
+
+  /* text */
+  --text: #111111;
+  --text-sub: #9d9d9d;
+
+  /* accent (used for focus borders) */
+  --text-deep: #d97706;
+
+  /* status (used for delete-button backgrounds) */
+  --red: #ef5b5b;
+  --red-bright: #ef4444;
+  --input-focus: #a6a6a6;
+
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* ----------------------------- shared primitives ----------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.btn-amber {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.btn-amber:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* primary button rendered as disabled/inactive (grey) */
+.btn-inactive {
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: default;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: inherit;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--input-focus);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* a bordered card/panel */
+.panel {
+  border: 1px solid var(--border);
+  background: var(--surface-60);
+  border-radius: var(--radius);
+}
+
+/* icon sizing (lucide) */
+.icon-3 {
+  width: 12px;
+  height: 12px;
+}
+.icon-3-5 {
+  width: 14px;
+  height: 14px;
+}
+.icon-4 {
+  width: 16px;
+  height: 16px;
+}
+.icon-5 {
+  width: 20px;
+  height: 20px;
+}
+
+/* visually-hidden until >= 640px */
+.hide-sm {
+  display: none;
+}
+@media (min-width: 640px) {
+  .hide-sm {
+    display: inline;
+  }
+}

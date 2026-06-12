@@ -1,0 +1,207 @@
+.create-back {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.create-grid {
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .create-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.create-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.boss-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.boss-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 8px 4px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.boss-option.is-selected {
+  border-color: var(--text);
+  background: var(--active);
+}
+
+.boss-option-imgwrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: block;
+}
+
+.boss-option-img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  object-fit: contain;
+  display: block;
+}
+
+.boss-option-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+}
+.boss-option.is-selected .boss-option-name {
+  color: var(--text);
+}
+
+.create-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.create-select {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 8px 12px;
+  font-size: 14px;
+  color: inherit;
+  outline: none;
+  font-family: inherit;
+}
+.create-select:focus {
+  border-color: var(--input-focus);
+}
+
+.create-time-sep {
+  color: var(--text);
+}
+
+.create-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+.create-step-row {
+  display: flex;
+  gap: 8px;
+}
+
+.create-step-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.15s ease;
+  font-family: inherit;
+  border: 1px solid var(--border);
+}
+.create-step-btn.is-active {
+  background: var(--active);
+}
+
+.create-calendar {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 12px;
+}
+
+.create-cal-nav {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.create-cal-navbtn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 4px;
+  color: inherit;
+}
+
+.create-cal-month {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.create-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.create-cal-weekday {
+  padding: 4px 0;
+}
+
+.create-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.create-cal-day {
+  aspect-ratio: 1 / 1;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text);
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.create-cal-day.is-selected {
+  background: var(--text);
+  font-weight: 700;
+  color: var(--bg);
+}
+
+.create-submit {
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--text);
+  color: var(--bg);
+}

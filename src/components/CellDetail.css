@@ -1,0 +1,21 @@
+.cell-detail {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px;
+  font-size: 14px;
+}
+
+.cell-detail-when {
+  font-weight: 600;
+}
+
+.cell-detail-yes {
+  margin-left: 8px;
+  color: var(--text);
+}
+
+.cell-detail-no {
+  margin-left: 8px;
+  color: var(--text);
+}
