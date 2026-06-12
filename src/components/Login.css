@@ -26,6 +26,30 @@
   font-weight: 700;
 }
 
+.login-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.login-tab {
+  flex: 1;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.login-tab.is-active {
+  background: var(--text);
+  color: var(--bg);
+}
+
 .login-hint {
   margin-bottom: 20px;
   font-size: 12px;

@@ -21,7 +21,7 @@ export function Shell({ children, user, onHome, onLogout }: ShellProps) {
               <CalendarDays
                 className="icon-5"
                 strokeWidth={1.5}
-                stroke="#111111"
+                stroke="#ffffff"
               />
             </div>
             <div className="shell-brand-text">

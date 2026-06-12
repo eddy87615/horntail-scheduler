@@ -1,21 +1,18 @@
 /* ============================ theme & globals ============================ */
 :root {
   /* surfaces */
-  --bg: #fdffff;
+  --bg: #111111;
   --active: #e5e5e5;
 
   /* borders */
-  --border: #111111;
+  --border: #ffffff;
   --border-60: rgba(30, 41, 59, 0.6);
   --border-strong: #334155;
   --radius: 4px;
 
   /* text */
-  --text: #111111;
+  --text: #ffffff;
   --text-sub: #9d9d9d;
-
-  /* accent (used for focus borders) */
-  --text-deep: #d97706;
 
   /* status (used for delete-button backgrounds) */
   --red: #ef5b5b;

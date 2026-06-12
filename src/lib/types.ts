@@ -23,6 +23,7 @@ export interface AvailRecord {
 
 export interface UserRecord {
   name: string;
+  jobId?: string;
   hash: string;
   createdAt: number;
 }
