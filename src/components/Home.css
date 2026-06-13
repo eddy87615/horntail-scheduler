@@ -175,6 +175,11 @@
   gap: 4px;
 }
 
+.home-card-meta-item.is-closed {
+  font-weight: 700;
+  color: var(--red);
+}
+
 .home-card-confirm {
   position: absolute;
   right: 12px;

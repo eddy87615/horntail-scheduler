@@ -29,11 +29,19 @@
 
 body {
   margin: 0;
-  padding: 12px;
   background: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans TC', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* #root is the full-height column: content grows, footer sticks to the bottom.
+   Page padding lives here (border-box) so 100vh has no overflow. */
+#root {
+  min-height: 100vh;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
 h1,

@@ -1,27 +1,27 @@
-import { useState, useEffect, useCallback } from "react";
-import { store, eventKey, availKey } from "./lib/store";
-import type { RaidEvent, User } from "./lib/types";
-import { Shell } from "./components/Shell";
-import { Login } from "./components/Login";
-import { Home } from "./components/Home";
-import { CreateEvent } from "./components/CreateEvent";
-import { EventView } from "./components/EventView";
-import "./App.css";
+import { useState, useEffect, useCallback } from 'react';
+import { store, eventKey, availKey } from './lib/store';
+import type { RaidEvent, User } from './lib/types';
+import { Shell } from './components/Shell';
+import { Login } from './components/Login';
+import { Home } from './components/Home';
+import { CreateEvent } from './components/CreateEvent';
+import { EventView } from './components/EventView';
+import './App.css';
 
-type View = "home" | "create" | "event";
+type View = 'home' | 'create' | 'event';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [booting, setBooting] = useState(true);
 
-  const [view, setView] = useState<View>("home");
+  const [view, setView] = useState<View>('home');
   const [events, setEvents] = useState<RaidEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const sess = await store.get<{ name: string }>("session", false);
+      const sess = await store.get<{ name: string }>('session', false);
       if (sess?.name) setUser({ name: sess.name });
       setBooting(false);
     })();
@@ -29,10 +29,10 @@ export default function App() {
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
-    const keys = await store.list("event:");
-    const list = (await Promise.all(keys.map((k) => store.get<RaidEvent>(k)))).filter(
-      Boolean,
-    ) as RaidEvent[];
+    const keys = await store.list('event:');
+    const list = (
+      await Promise.all(keys.map((k) => store.get<RaidEvent>(k)))
+    ).filter(Boolean) as RaidEvent[];
     list.sort((a, b) => b.createdAt - a.createdAt);
     setEvents(list);
     setLoading(false);
@@ -42,9 +42,9 @@ export default function App() {
   }, [user, loadEvents]);
 
   const logout = async () => {
-    await store.del("session", false);
+    await store.del('session', false);
     setUser(null);
-    setView("home");
+    setView('home');
     setActiveId(null);
   };
 
@@ -59,7 +59,7 @@ export default function App() {
       <Shell>
         <Login
           onLogin={async (name) => {
-            await store.set("session", { name }, false);
+            await store.set('session', { name }, false);
             setUser({ name });
           }}
         />
@@ -67,55 +67,62 @@ export default function App() {
     );
 
   return (
-    <Shell
-      user={user}
-      onHome={() => {
-        setView("home");
-        setActiveId(null);
-      }}
-      onLogout={logout}
-    >
-      <main className="shell-main">
-      {view === "home" && (
-        <Home
-          loading={loading}
-          events={events}
-          onCreate={() => setView("create")}
-          onOpen={(id) => {
-            setActiveId(id);
-            setView("event");
-          }}
-          onDelete={async (id) => {
-            const ev = events.find((e) => e.id === id);
-            if (ev) for (const n of ev.participants || []) await store.del(availKey(id, n));
-            await store.del(eventKey(id));
-            loadEvents();
-          }}
-        />
-      )}
-      {view === "create" && (
-        <CreateEvent
-          onCancel={() => setView("home")}
-          onCreated={async (ev) => {
-            await store.set(eventKey(ev.id), ev);
-            await loadEvents();
-            setActiveId(ev.id);
-            setView("event");
-          }}
-        />
-      )}
-      {view === "event" && activeId && (
-        <EventView
-          eventId={activeId}
-          user={user}
-          onBack={() => {
-            setView("home");
-            loadEvents();
-          }}
-          onParticipantsChange={loadEvents}
-        />
-      )}
-      </main>
-    </Shell>
+    <>
+      <Shell
+        user={user}
+        onHome={() => {
+          setView('home');
+          setActiveId(null);
+        }}
+        onLogout={logout}
+      >
+        <main className="shell-main">
+          {view === 'home' && (
+            <Home
+              loading={loading}
+              events={events}
+              onCreate={() => setView('create')}
+              onOpen={(id) => {
+                setActiveId(id);
+                setView('event');
+              }}
+              onDelete={async (id) => {
+                const ev = events.find((e) => e.id === id);
+                if (ev)
+                  for (const n of ev.participants || [])
+                    await store.del(availKey(id, n));
+                await store.del(eventKey(id));
+                loadEvents();
+              }}
+            />
+          )}
+          {view === 'create' && (
+            <CreateEvent
+              onCancel={() => setView('home')}
+              onCreated={async (ev) => {
+                await store.set(eventKey(ev.id), {
+                  ...ev,
+                  ownerName: user.name,
+                });
+                await loadEvents();
+                setActiveId(ev.id);
+                setView('event');
+              }}
+            />
+          )}
+          {view === 'event' && activeId && (
+            <EventView
+              eventId={activeId}
+              user={user}
+              onBack={() => {
+                setView('home');
+                loadEvents();
+              }}
+              onParticipantsChange={loadEvents}
+            />
+          )}
+        </main>
+      </Shell>
+    </>
   );
 }

@@ -13,6 +13,9 @@ export interface RaidEvent {
   step: number;
   participants: string[];
   createdAt: number;
+  deadline?: string; // ISO date "YYYY-MM-DD"; filling locks after this day
+  ownerName?: string; // creator's identity; only they can unlock after deadline
+  unlocked?: boolean; // owner re-opened filling past the deadline
 }
 
 export interface AvailRecord {

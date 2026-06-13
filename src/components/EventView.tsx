@@ -23,6 +23,7 @@ import {
   timeLabel,
   cellKey,
   pad,
+  isoDate,
 } from '../lib/date';
 import { heatColor } from '../lib/heatmap';
 import { groupBest } from '../lib/schedule';
@@ -57,6 +58,11 @@ export function EventView({
     () => (ev ? buildSlots(ev.startH, ev.endH, ev.step) : []),
     [ev],
   );
+
+  // deadline: filling locks the day after `deadline`, unless the owner reopened it
+  const pastDeadline = !!ev?.deadline && isoDate(new Date()) > ev.deadline;
+  const locked = pastDeadline && !ev?.unlocked;
+  const isOwner = !!ev && ev.ownerName === user.name;
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -152,10 +158,13 @@ export function EventView({
       gridEl.current.removeEventListener('touchmove', blockScroll.current);
     }
     gridEl.current = node;
-    node?.addEventListener('touchmove', blockScroll.current, { passive: false });
+    node?.addEventListener('touchmove', blockScroll.current, {
+      passive: false,
+    });
   }, []);
 
   const onCellDown = (key: string, e: ReactPointerEvent<HTMLDivElement>) => {
+    if (locked) return; // past deadline: read-only
     startCell.current = key;
     startXY.current = { x: e.clientX, y: e.clientY };
     moved.current = false;
@@ -208,6 +217,14 @@ export function EventView({
     setAvails((p) => ({ ...p, [user.name]: new Set(mySlots) }));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  // owner-only: reopen (lock=false) or re-lock (lock=true) filling past deadline
+  const setLocked = async (lock: boolean) => {
+    if (!ev) return;
+    const updated = { ...ev, unlocked: !lock };
+    await store.set(eventKey(eventId), updated);
+    setEv(updated);
   };
 
   const share = async () => {
@@ -266,6 +283,16 @@ export function EventView({
             {ev.dates.length} 天 · {pad(ev.startH)}:00–{pad(ev.endH % 24)}:00
             {ev.endH >= 24 ? '(+1)' : ''} · {ev.step} 分鐘 · {total} 人已填
           </p>
+          {ev.deadline && (
+            <p className="event-deadline">
+              填寫截止:{fmtDateShort(ev.deadline)}
+              {locked
+                ? ' · 已截止'
+                : pastDeadline && ev.unlocked
+                  ? ' · 已開放補填'
+                  : ''}
+            </p>
+          )}
         </div>
         <div className="event-head-actions">
           <button onClick={share} className="event-share">
@@ -304,12 +331,35 @@ export function EventView({
         把代碼給隊員,在首頁「貼上遠征代碼」即可直接填寫
       </div>
 
-      {tab === 'mine' && (
-        <p className="event-mine-hint">
-          以 <span className="event-mine-name">{user.name}</span> 填寫 ·
-          拖曳塗選有空時段
-        </p>
-      )}
+      {tab === 'mine' &&
+        (locked ? (
+          <div className="event-locked">
+            <span>此遠征已過截止日,目前鎖定填寫。</span>
+            {isOwner && (
+              <button onClick={() => setLocked(false)} className="event-unlock">
+                解除鎖定
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            <p className="event-mine-hint">
+              以 <span className="event-mine-name">{user.name}</span> 填寫 ·
+              拖曳塗選有空時段
+            </p>
+            {isOwner && pastDeadline && ev.unlocked && (
+              <div className="event-locked">
+                <span>已過截止日,目前為補填開放中。</span>
+                <button
+                  onClick={() => setLocked(true)}
+                  className="event-unlock"
+                >
+                  重新鎖定
+                </button>
+              </div>
+            )}
+          </>
+        ))}
 
       <div className="event-grid-wrap">
         <div
@@ -363,7 +413,7 @@ export function EventView({
         </div>
       </div>
 
-      {tab === 'mine' && (
+      {tab === 'mine' && !locked && (
         <button onClick={saveMine} className="btn btn-amber event-save">
           {saved ? (
             <>

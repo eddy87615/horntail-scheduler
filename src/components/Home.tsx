@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Calendar, Plus, Users, Clock, Trash2 } from 'lucide-react';
 import { hasStore } from '../lib/store';
 import { bossById } from '../lib/bosses';
-import { pad, timeLabel } from '../lib/date';
+import { pad, timeLabel, fmtDateShort, isoDate } from '../lib/date';
 import type { RaidEvent } from '../lib/types';
 import './Home.css';
 
@@ -107,6 +107,16 @@ export function Home({
                     <Users className="icon-3-5" strokeWidth={1.5} />
                     {(ev.participants || []).length} 人
                   </span>
+                  {ev.deadline &&
+                    (isoDate(new Date()) > ev.deadline && !ev.unlocked ? (
+                      <span className="home-card-meta-item is-closed">
+                        已截止
+                      </span>
+                    ) : (
+                      <span className="home-card-meta-item">
+                        截止 {fmtDateShort(ev.deadline)}
+                      </span>
+                    ))}
                 </div>
               </button>
               {confirmId === ev.id ? (

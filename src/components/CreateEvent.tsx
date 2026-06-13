@@ -21,6 +21,9 @@ export function CreateEvent({ onCancel, onCreated }: CreateEventProps) {
   const [startH, setStartH] = useState(20);
   const [endH, setEndH] = useState(24);
   const [step, setStep] = useState(30);
+  const [deadline, setDeadline] = useState(''); // "" = 不設
+
+
 
   const days = useMemo(() => {
     const first = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
@@ -139,6 +142,16 @@ export function CreateEvent({ onCancel, onCreated }: CreateEventProps) {
               ))}
             </div>
           </div>
+          <div>
+            <label className="field-label">填寫截止日期(可不設)</label>
+            <input
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              className="input"
+            />
+            <p className="create-hint">過了這天就會鎖定,只有開團的人能解除</p>
+          </div>
         </div>
         <div>
           <label className="field-label">
@@ -209,6 +222,7 @@ export function CreateEvent({ onCancel, onCreated }: CreateEventProps) {
             step,
             participants: [],
             createdAt: Date.now(),
+            deadline: deadline || undefined,
           })
         }
         className={`create-submit ${valid ? 'btn btn-amber' : 'btn btn-inactive'}`}
