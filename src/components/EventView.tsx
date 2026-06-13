@@ -28,6 +28,7 @@ import {
 import { heatColor } from '../lib/heatmap';
 import { groupBest } from '../lib/schedule';
 import { bossById } from '../lib/bosses';
+import { logAction } from '../lib/audit';
 import type { RaidEvent, AvailRecord, User } from '../lib/types';
 import { CellDetail } from './CellDetail';
 import './EventView.css';
@@ -225,6 +226,7 @@ export function EventView({
     const updated = { ...ev, unlocked: !lock };
     await store.set(eventKey(eventId), updated);
     setEv(updated);
+    await logAction(user.name, lock ? 'relock' : 'unlock', ev);
   };
 
   const share = async () => {

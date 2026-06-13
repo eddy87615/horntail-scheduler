@@ -4,11 +4,22 @@ import { hasStore } from '../lib/store';
 import { bossById } from '../lib/bosses';
 import { pad, timeLabel, fmtDateShort, isoDate } from '../lib/date';
 import type { RaidEvent } from '../lib/types';
+import type { AuditEntry, AuditAction } from '../lib/audit';
 import './Home.css';
+
+const ACTION_LABEL: Record<AuditAction, string> = {
+  create: '建立',
+  delete: '刪除',
+  restore: '還原',
+  purge: '永久刪除',
+  unlock: '解除鎖定',
+  relock: '重新鎖定',
+};
 
 interface HomeProps {
   loading: boolean;
   events: RaidEvent[];
+  logs: AuditEntry[];
   userName: string;
   onCreate: () => void;
   onOpen: (id: string) => void;
@@ -20,6 +31,7 @@ interface HomeProps {
 export function Home({
   loading,
   events,
+  logs,
   userName,
   onCreate,
   onOpen,
@@ -29,6 +41,7 @@ export function Home({
 }: HomeProps) {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [purgeId, setPurgeId] = useState<string | null>(null);
+  const [showLogs, setShowLogs] = useState(false);
   const [code, setCode] = useState('');
   const [codeErr, setCodeErr] = useState('');
 
@@ -210,6 +223,35 @@ export function Home({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {logs.length > 0 && (
+        <div className="home-log">
+          <button
+            className="home-log-toggle"
+            onClick={() => setShowLogs((v) => !v)}
+          >
+            操作紀錄（{logs.length}）{showLogs ? '▲' : '▼'}
+          </button>
+          {showLogs && (
+            <div className="home-log-list">
+              {logs.map((l) => (
+                <div key={l.id} className="home-log-item">
+                  <span className="home-log-time">
+                    {new Date(l.at).toLocaleString()}
+                  </span>
+                  <span className="home-log-by">{l.by}</span>
+                  <span className="home-log-action">
+                    {ACTION_LABEL[l.action] ?? l.action}
+                  </span>
+                  <span className="home-log-target">
+                    {l.eventTitle ?? l.eventId}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

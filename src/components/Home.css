@@ -280,6 +280,57 @@
   color: var(--red);
 }
 
+.home-log {
+  margin-top: 32px;
+}
+
+.home-log-toggle {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  font-family: inherit;
+}
+
+.home-log-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home-log-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 12px;
+  color: var(--text-sub);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.home-log-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.home-log-by {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.home-log-action {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.home-log-target {
+  color: var(--text);
+}
+
 .home-preview-note {
   margin-top: 24px;
   border-radius: var(--radius);

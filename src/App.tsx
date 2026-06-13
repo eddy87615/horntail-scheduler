@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { store, eventKey, availKey } from './lib/store';
+import { logAction, loadAudit } from './lib/audit';
 import type { RaidEvent, User } from './lib/types';
+import type { AuditEntry } from './lib/audit';
 import { Shell } from './components/Shell';
 import { Login } from './components/Login';
 import { Home } from './components/Home';
@@ -16,6 +18,7 @@ export default function App() {
 
   const [view, setView] = useState<View>('home');
   const [events, setEvents] = useState<RaidEvent[]>([]);
+  const [logs, setLogs] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -35,6 +38,7 @@ export default function App() {
     ).filter(Boolean) as RaidEvent[];
     list.sort((a, b) => b.createdAt - a.createdAt);
     setEvents(list);
+    setLogs(await loadAudit());
     setLoading(false);
   }, []);
   useEffect(() => {
@@ -81,6 +85,7 @@ export default function App() {
             <Home
               loading={loading}
               events={events}
+              logs={logs}
               userName={user.name}
               onCreate={() => setView('create')}
               onOpen={(id) => {
@@ -96,6 +101,7 @@ export default function App() {
                   deleted: true,
                   deletedAt: Date.now(),
                 });
+                await logAction(user.name, 'delete', ev);
                 loadEvents();
               }}
               onRestore={async (id) => {
@@ -106,6 +112,7 @@ export default function App() {
                   deleted: false,
                   deletedAt: undefined,
                 });
+                await logAction(user.name, 'restore', ev);
                 loadEvents();
               }}
               onPurge={async (id) => {
@@ -115,6 +122,7 @@ export default function App() {
                   for (const n of ev.participants || [])
                     await store.del(availKey(id, n));
                 await store.del(eventKey(id));
+                if (ev) await logAction(user.name, 'purge', ev);
                 loadEvents();
               }}
             />
@@ -127,6 +135,7 @@ export default function App() {
                   ...ev,
                   ownerName: user.name,
                 });
+                await logAction(user.name, 'create', ev);
                 await loadEvents();
                 setActiveId(ev.id);
                 setView('event');
