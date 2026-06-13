@@ -9,21 +9,32 @@ import './Home.css';
 interface HomeProps {
   loading: boolean;
   events: RaidEvent[];
+  userName: string;
   onCreate: () => void;
   onOpen: (id: string) => void;
   onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  onPurge: (id: string) => void;
 }
 
 export function Home({
   loading,
   events,
+  userName,
   onCreate,
   onOpen,
   onDelete,
+  onRestore,
+  onPurge,
 }: HomeProps) {
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [purgeId, setPurgeId] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [codeErr, setCodeErr] = useState('');
+
+  const active = events.filter((e) => !e.deleted);
+  const trashed = events.filter((e) => e.deleted);
+  const canManage = (ev: RaidEvent) => !ev.ownerName || ev.ownerName === userName;
 
   const joinByCode = () => {
     const c = code.trim();
@@ -65,7 +76,7 @@ export function Home({
 
       {loading ? (
         <p className="home-loading">載入中…</p>
-      ) : events.length === 0 ? (
+      ) : active.length === 0 ? (
         <div className="home-empty">
           <p className="home-empty-text">還沒有任何遠征。</p>
           <button onClick={onCreate} className="home-empty-link">
@@ -74,7 +85,7 @@ export function Home({
         </div>
       ) : (
         <div className="home-grid">
-          {events.map((ev) => (
+          {active.map((ev) => (
             <div key={ev.id} className="home-card">
               <button onClick={() => onOpen(ev.id)} className="home-card-open">
                 <div className="home-card-head">
@@ -119,34 +130,86 @@ export function Home({
                     ))}
                 </div>
               </button>
-              {confirmId === ev.id ? (
-                <div className="home-card-confirm">
+              {canManage(ev) &&
+                (confirmId === ev.id ? (
+                  <div className="home-card-confirm">
+                    <button
+                      onClick={() => {
+                        onDelete(ev.id);
+                        setConfirmId(null);
+                      }}
+                      className="home-card-confirm-del"
+                    >
+                      刪除
+                    </button>
+                    <button
+                      onClick={() => setConfirmId(null)}
+                      className="home-card-confirm-cancel"
+                    >
+                      取消
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={() => {
-                      onDelete(ev.id);
-                      setConfirmId(null);
-                    }}
-                    className="home-card-confirm-del"
+                    onClick={() => setConfirmId(ev.id)}
+                    className="home-card-trash"
                   >
-                    刪除
+                    <Trash2 className="icon-4" />
                   </button>
-                  <button
-                    onClick={() => setConfirmId(null)}
-                    className="home-card-confirm-cancel"
-                  >
-                    取消
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setConfirmId(ev.id)}
-                  className="home-card-trash"
-                >
-                  <Trash2 className="icon-4" />
-                </button>
-              )}
+                ))}
             </div>
           ))}
+        </div>
+      )}
+
+      {trashed.length > 0 && (
+        <div className="home-trash">
+          <h2 className="home-trash-title">
+            <Trash2 className="icon-4" strokeWidth={1.5} /> 已刪除（{trashed.length}）
+          </h2>
+          <div className="home-trash-list">
+            {trashed.map((ev) => (
+              <div key={ev.id} className="home-trash-item">
+                <span className="home-trash-name">{ev.title}</span>
+                {canManage(ev) && (
+                  <span className="home-trash-actions">
+                    <button
+                      onClick={() => onRestore(ev.id)}
+                      className="home-trash-restore"
+                    >
+                      還原
+                    </button>
+                    {purgeId === ev.id ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            onPurge(ev.id);
+                            setPurgeId(null);
+                          }}
+                          className="home-card-confirm-del"
+                        >
+                          確定永久刪除
+                        </button>
+                        <button
+                          onClick={() => setPurgeId(null)}
+                          className="home-card-confirm-cancel"
+                        >
+                          取消
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => setPurgeId(ev.id)}
+                        className="home-trash-purge"
+                      >
+                        永久刪除
+                      </button>
+                    )}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

@@ -219,6 +219,67 @@
   color: var(--text);
 }
 
+.home-trash {
+  margin-top: 32px;
+}
+
+.home-trash-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+}
+
+.home-trash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-trash-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-60);
+  padding: 10px 12px;
+}
+
+.home-trash-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.home-trash-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-trash-restore,
+.home-trash-purge {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.home-trash-purge {
+  color: var(--red);
+}
+
 .home-preview-note {
   margin-top: 24px;
   border-radius: var(--radius);

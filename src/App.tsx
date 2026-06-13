@@ -81,12 +81,35 @@ export default function App() {
             <Home
               loading={loading}
               events={events}
+              userName={user.name}
               onCreate={() => setView('create')}
               onOpen={(id) => {
                 setActiveId(id);
                 setView('event');
               }}
               onDelete={async (id) => {
+                // soft delete: keep the row (and avails) so it can be restored
+                const ev = events.find((e) => e.id === id);
+                if (!ev) return;
+                await store.set(eventKey(id), {
+                  ...ev,
+                  deleted: true,
+                  deletedAt: Date.now(),
+                });
+                loadEvents();
+              }}
+              onRestore={async (id) => {
+                const ev = events.find((e) => e.id === id);
+                if (!ev) return;
+                await store.set(eventKey(id), {
+                  ...ev,
+                  deleted: false,
+                  deletedAt: undefined,
+                });
+                loadEvents();
+              }}
+              onPurge={async (id) => {
+                // permanent delete (irreversible): remove event + its avails
                 const ev = events.find((e) => e.id === id);
                 if (ev)
                   for (const n of ev.participants || [])
