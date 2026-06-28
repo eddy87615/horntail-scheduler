@@ -363,7 +363,10 @@ export function EventView({
           </>
         ))}
 
-      <div className="event-grid-wrap">
+      <div
+        className="event-grid-wrap"
+        onPointerLeave={() => setHoverCell(null)}
+      >
         <div
           className="event-grid"
           ref={setGridRef}
@@ -402,7 +405,6 @@ export function EventView({
                   <div
                     key={key}
                     onPointerEnter={() => setHoverCell(key)}
-                    onPointerLeave={() => setHoverCell(null)}
                     className="event-cell event-cell-heat"
                     style={{ background: heatColor(ratio) }}
                   >
@@ -446,8 +448,12 @@ export function EventView({
               </div>
             </div>
           )}
-          {hoverCell && (
+          {hoverCell ? (
             <CellDetail cellKey={hoverCell} people={people} avails={avails} />
+          ) : (
+            <div className="cell-detail event-celldetail-hint">
+              移到上方時段,看誰有空、缺誰
+            </div>
           )}
           <div className="event-best">
             <h3 className="event-best-title">

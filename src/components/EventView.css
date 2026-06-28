@@ -128,6 +128,11 @@
   color: var(--text);
 }
 
+/* placeholder that keeps the hover-detail slot's height reserved (no layout jump) */
+.event-celldetail-hint {
+  color: var(--text-sub);
+}
+
 .event-deadline {
   margin-top: 4px;
   font-size: 12px;
