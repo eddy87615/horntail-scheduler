@@ -8,7 +8,7 @@ export interface Boss {
 }
 
 export const BOSSES: Boss[] = [
-  { id: 'horntail', name: '暗黑龍王', img: '/bosses/horntail.png' },
+  { id: 'horntail', name: '闇黑龍王', img: '/bosses/horntail.png' },
   { id: 'zakum', name: '殘暴炎魔', img: '/bosses/zakum.png' },
   {
     id: 'normal-magnus',

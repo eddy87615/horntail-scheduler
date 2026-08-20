@@ -4,6 +4,9 @@
   background: var(--surface);
   padding: 12px;
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cell-detail-when {
@@ -11,11 +14,23 @@
 }
 
 .cell-detail-yes {
-  margin-left: 8px;
   color: var(--text);
+  line-height: 1.5;
 }
 
 .cell-detail-no {
-  margin-left: 8px;
   color: var(--text);
+}
+
+.cell-detail-yes-text {
+  margin-right: 8px;
+  padding: 4px;
+  background-color: rgb(233, 124, 0);
+  border-radius: 2px;
+}
+.cell-detail-no-text {
+  margin-right: 8px;
+  padding: 4px;
+  background-color: rgb(255, 31, 31);
+  border-radius: 2px;
 }
