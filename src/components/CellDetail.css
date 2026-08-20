@@ -15,7 +15,6 @@
 
 .cell-detail-yes {
   color: var(--text);
-  line-height: 1.5;
 }
 
 .cell-detail-no {
@@ -27,10 +26,15 @@
   padding: 4px;
   background-color: rgb(233, 124, 0);
   border-radius: 2px;
+  line-height: 2;
+  display: inline;
 }
+
 .cell-detail-no-text {
   margin-right: 8px;
   padding: 4px;
   background-color: rgb(255, 31, 31);
   border-radius: 2px;
+  line-height: 2;
+  display: inline;
 }
